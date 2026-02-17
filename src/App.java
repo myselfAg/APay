@@ -133,11 +133,11 @@ public class App {
             boolean willContinue = true;
             while (willContinue) {
                 System.out.println("1. View Your Details");
-                System.out.println("2. Change Your Password");
+                System.out.println("2. Change Your Details");
                 System.out.println("3. View User Details");
                 System.out.println("4. View User Transactions");
                 System.out.println("5. Suspend User"); // will be a loop
-                System.out.println("6. Unsuspend User"); // will be a loop
+                System.out.println("6. Active User"); // will be a loop
                 System.out.println("7. Exit"); // will be a loop
 
                 System.out.print("Enter Choice: ");
@@ -147,10 +147,58 @@ public class App {
                         System.out.println("ID: " + adminResultSet.getLong("id"));
                         System.out.println("Name: " + adminResultSet.getString("name"));
                         System.out.println("Username: " + adminResultSet.getString("username"));
-                        System.out.println("Password: " + adminResultSet.getLong("pass"));
                         break;
                     case 2:
+                        System.out.println("1. Change Name");
+                        System.out.println("2. Change Username");
+                        System.out.println("3. Change Password");
 
+                        System.out.print("Enter Choice: ");
+                        int change = sc.nextInt();
+                        switch (change) {
+                            case 1:
+                                try {
+                                    String changeName = "UPDATE admin SET name = ? WHERE id = ?";
+                                    PreparedStatement preparedStatement = connection.prepareStatement(changeName);
+
+                                    long storedId = adminResultSet.getLong("id");
+                                    long storedPass = adminResultSet.getLong("pass");
+
+                                    sc.nextLine();
+                                    System.out.print("Enter new name: ");
+                                    String newName = sc.nextLine();
+
+                                    System.out.print("Enter Password: ");
+                                    long newPass = sc.nextLong();
+
+                                    if (newPass == storedPass) {
+                                        preparedStatement.setString(1, newName);
+                                        preparedStatement.setLong(2, storedId);
+                                        int rowsAffected = preparedStatement.executeUpdate();
+                                        if (rowsAffected > 0) {
+                                            System.out.println("Name Updated Successfully");
+                                            signin_admin_account(connection);
+                                        } else {
+                                            System.out.println("Name did not Update");
+                                        }
+                                    } else {
+                                        System.out.println("Incorrect Password");
+                                    }
+                                } catch (SQLException e) {
+                                    System.out.println(e.getMessage());
+                                }
+
+                                break;
+                            case 2:
+
+                                break;
+                            case 3:
+
+                                break;
+
+                            default:
+                                break;
+                        }
                         break;
                     case 3:
 
