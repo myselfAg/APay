@@ -22,7 +22,7 @@ public class App {
             if (isAdmin.toUpperCase().equals("Y")) {
                 admin(connection);
             } else {
-                // user(connection);
+                user(connection);
             }
 
         } catch (SQLException e) {
@@ -294,5 +294,95 @@ public class App {
 
     }
 
-    
+    static void user(Connection connection) {
+        System.out.println("Hello User");
+        System.out.println("-------------------------");
+        System.out.println("1. Sign Up");
+        System.out.println("2. Sign In");
+        System.out.println("-------------------------");
+        System.out.print("Enter choice: ");
+
+        int choice = sc.nextInt();
+        switch (choice) {
+            case 1:
+                create_user_account(connection);
+                break;
+            case 2:
+                signin_user_account(connection);
+                break;
+            default:
+                System.out.println("Invalid Choice");
+                break;
+        }
+
+    }
+
+    static void create_user_account(Connection connection) {
+        try {
+            String query = "INSERT INTO user(name, pass, pin, amount) VALUES(?, ?, ?, ?)";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            System.out.println("You will be provided an random USER ID");
+            sc.nextLine();
+            System.out.print("Enter Name: ");
+            String name = sc.nextLine();
+            System.out.print("Enter Password: ");
+            long password = sc.nextLong();
+            System.out.print("Enter PIN: ");
+            long pin = sc.nextLong();
+            System.out.print("Enter amount: ");
+            long amount = sc.nextLong();
+
+            preparedStatement.setString(1, name);
+            preparedStatement.setLong(2, password);
+            preparedStatement.setLong(3, pin);
+            preparedStatement.setLong(4, amount);
+
+            int rowsAffected = preparedStatement.executeUpdate();
+
+            if (rowsAffected > 0) {
+                System.out.println("Account Created Successfully");
+            } else {
+                System.out.println("Account is not Created");
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    static void signin_user_account(Connection connection) {
+        try {
+            String query = "SELECT * FROM user WHERE account_number = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+
+            sc.nextLine();
+            System.out.print("Enter ID: ");
+            long username = sc.nextLong();
+            preparedStatement.setLong(1, username);
+            ResultSet userResultSet = preparedStatement.executeQuery();
+
+            if (userResultSet.next()) {
+                long originalPass = userResultSet.getLong("pass");
+                System.out.print("Enter Password: ");
+                long password = sc.nextLong();
+
+                if (password == originalPass) {
+                    String name = userResultSet.getString("name");
+                    System.out.println("Welcome " + name.toUpperCase());
+
+                    user_power(connection, userResultSet);
+
+                } else {
+                    System.out.println("Incorrect Password");
+                }
+            } else {
+                System.out.println("Account not found");
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    static void user_power(Connection connection, ResultSet userResultSet) {
+        System.out.println("User Power");
+    }
 }
