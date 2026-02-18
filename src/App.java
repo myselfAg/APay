@@ -307,7 +307,7 @@ public class App {
                         }
 
                         break;
-                    case 6: //active user
+                    case 6:
                         String activeQuery = "UPDATE user SET isSuspend = false WHERE account_number = ?";
                         PreparedStatement activePreparedStatement = connection.prepareStatement(activeQuery);
 
@@ -400,23 +400,28 @@ public class App {
 
             sc.nextLine();
             System.out.print("Enter Account Number: ");
-            long username = sc.nextLong();
-            preparedStatement.setLong(1, username);
+            long accountNumber = sc.nextLong();
+            preparedStatement.setLong(1, accountNumber);
             ResultSet userResultSet = preparedStatement.executeQuery();
 
             if (userResultSet.next()) {
-                long originalPass = userResultSet.getLong("pass");
-                System.out.print("Enter Password: ");
-                long password = sc.nextLong();
-
-                if (password == originalPass) {
-                    String name = userResultSet.getString("name");
-                    System.out.println("Welcome " + name.toUpperCase());
-
-                    user_power(connection, userResultSet);
-
+                boolean isSuspend = userResultSet.getBoolean("isSuspend");
+                if (isSuspend) {
+                    System.out.println("Your Account is Suspended");
                 } else {
-                    System.out.println("Incorrect Password");
+                    long originalPass = userResultSet.getLong("pass");
+                    System.out.print("Enter Password: ");
+                    long password = sc.nextLong();
+
+                    if (password == originalPass) {
+                        String name = userResultSet.getString("name");
+                        System.out.println("Welcome " + name.toUpperCase());
+
+                        user_power(connection, userResultSet);
+
+                    } else {
+                        System.out.println("Incorrect Password");
+                    }
                 }
             } else {
                 System.out.println("Account not found");
@@ -513,7 +518,8 @@ public class App {
                             long withdrawAmount = sc.nextLong();
 
                             String balanceCheckQuery = "SELECT amount FROM user WHERE account_number = ?";
-                            PreparedStatement balanceCheckPreparedStatement = connection.prepareStatement(balanceCheckQuery);
+                            PreparedStatement balanceCheckPreparedStatement = connection
+                                    .prepareStatement(balanceCheckQuery);
                             balanceCheckPreparedStatement.setLong(1, accountNumber);
 
                             ResultSet balanceCheckResultSet = balanceCheckPreparedStatement.executeQuery();
@@ -548,7 +554,7 @@ public class App {
                         break;
                     case 5: // sent money to another account
                         try {
-                            
+
                         } catch (Exception e) {
 
                         } finally {
@@ -559,6 +565,118 @@ public class App {
 
                         break;
                     case 7: // update account details
+                        System.out.println("-------------------------");
+                        System.out.println("1. Change Name");
+                        System.out.println("2. Change Password");
+                        System.out.println("3. Change PIN");
+                        System.out.println("-------------------------");
+
+                        System.out.print("Enter Choice: ");
+                        int change = sc.nextInt();
+                        switch (change) {
+                            case 1:
+                                try {
+                                    String changeName = "UPDATE user SET name = ? WHERE account_number = ?";
+                                    PreparedStatement updateNamePreparedStatement = connection.prepareStatement(changeName);
+
+                                    long storedAccountNumber = userResultSet.getLong("account_number");
+                                    long storedPass = userResultSet.getLong("pass");
+
+                                    sc.nextLine();
+                                    System.out.print("Enter new name: ");
+                                    String newName = sc.nextLine();
+
+                                    System.out.print("Enter Password to update name: ");
+                                    long newPass = sc.nextLong();
+
+                                    if (newPass == storedPass) {
+                                        updateNamePreparedStatement.setString(1, newName);
+                                        updateNamePreparedStatement.setLong(2, storedAccountNumber);
+                                        int updateNameRowsAffected = updateNamePreparedStatement.executeUpdate();
+                                        if (updateNameRowsAffected > 0) {
+                                            System.out.println("Name Updated Successfully");
+                                            signin_user_account(connection);
+                                        } else {
+                                            System.out.println("Name did not Update");
+                                        }
+                                    } else {
+                                        System.out.println("Incorrect Password");
+                                    }
+                                } catch (SQLException e) {
+                                    System.out.println(e.getMessage());
+                                }
+
+                                break;
+                            case 2:
+                                try {
+                                    String changePass = "UPDATE user SET pass = ? WHERE account_number = ?";
+                                    PreparedStatement updatePassPreparedStatement = connection.prepareStatement(changePass);
+
+                                    long storedAccountNumber = userResultSet.getLong("account_number");
+                                    long storedPass = userResultSet.getLong("pass");
+
+                                    sc.nextLine();
+                                    System.out.print("Enter new password: ");
+                                    long newPassword = sc.nextLong();
+
+                                    System.out.print("Enter old password to updated to new password: ");
+                                    long enteredPass = sc.nextLong();
+
+                                    if (enteredPass == storedPass) {
+                                        updatePassPreparedStatement.setLong(1, newPassword);
+                                        updatePassPreparedStatement.setLong(2, storedAccountNumber);
+                                        int updatePassRowsAffected = updatePassPreparedStatement.executeUpdate();
+                                        if (updatePassRowsAffected > 0) {
+                                            System.out.println("Password Updated Successfully");
+                                            signin_user_account(connection);
+                                        } else {
+                                            System.out.println("Password did not Update");
+                                        }
+                                    } else {
+                                        System.out.println("Incorrect Password");
+                                    }
+                                } catch (SQLException e) {
+                                    System.out.println(e.getMessage());
+                                }
+                                break;
+                            case 3:
+                                try {
+                                    String changePin = "UPDATE user SET pin = ? WHERE account_number = ?";
+                                    PreparedStatement updatePinPreparedStatement = connection.prepareStatement(changePin);
+
+                                    long storedAccountNumber = userResultSet.getLong("account_number");
+                                    long storedPass = userResultSet.getLong("pass");
+
+                                    sc.nextLine();
+                                    System.out.print("Enter new pin: ");
+                                    long newPass = sc.nextLong();
+
+                                    System.out.print("Enter password to update the pin: ");
+                                    long enteredPass = sc.nextLong();
+
+                                    if (enteredPass == storedPass) {
+                                        updatePinPreparedStatement.setLong(1, newPass);
+                                        updatePinPreparedStatement.setLong(2, storedAccountNumber);
+                                        int updatePinRowsAffected = updatePinPreparedStatement.executeUpdate();
+                                        if (updatePinRowsAffected > 0) {
+                                            System.out.println("PIN Updated Successfully");
+                                            willContinue = false;
+                                            signin_user_account(connection);
+                                        } else {
+                                            System.out.println("PIN did not Update");
+                                        }
+                                    } else {
+                                        System.out.println("Incorrect Password");
+                                    }
+                                } catch (SQLException e) {
+                                    System.out.println(e.getMessage());
+                                }
+                                break;
+
+                            default:
+                                break;
+                        }
+                        
 
                         break;
                     case 8: // delete account
