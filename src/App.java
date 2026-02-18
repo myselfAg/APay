@@ -268,16 +268,60 @@ public class App {
                         }
                         break;
                     case 3:
+                        String accountQuery = "SELECT * FROM user";
+                        PreparedStatement accountPreparedStatement = connection.prepareStatement(accountQuery);
+
+                        ResultSet accountResultSet = accountPreparedStatement.executeQuery();
+                        while (accountResultSet.next()) {
+                            System.out.println("-------------------------");
+                            System.out.println("Account Number: " + accountResultSet.getLong("account_number"));
+                            System.out.println("Name: " + accountResultSet.getString("name"));
+                            System.out.println("Available Balance: " + accountResultSet.getLong("amount"));
+                            boolean isSus = accountResultSet.getBoolean("isSuspend");
+                            if (isSus) {
+                                System.out.println("Suspended");
+                            } else {
+                                System.out.println("Active");
+                            }
+                            System.out.println("-------------------------");
+                        }
 
                         break;
                     case 4:
 
                         break;
                     case 5:
+                        String suspendQuery = "UPDATE user SET isSuspend = true WHERE account_number = ?";
+                        PreparedStatement suspendPreparedStatement = connection.prepareStatement(suspendQuery);
+
+                        System.out.print("Enter account number to suspend: ");
+                        long suspendAccountNumber = sc.nextLong();
+
+                        suspendPreparedStatement.setLong(1, suspendAccountNumber);
+
+                        int suspendRowsAffected = suspendPreparedStatement.executeUpdate();
+                        if (suspendRowsAffected > 0) {
+                            System.out.println("Account Suspended Successfully");
+                        } else {
+                            System.out.println("Account does not exists");
+                        }
 
                         break;
-                    case 6:
+                    case 6: //active user
+                        String activeQuery = "UPDATE user SET isSuspend = false WHERE account_number = ?";
+                        PreparedStatement activePreparedStatement = connection.prepareStatement(activeQuery);
 
+                        System.out.print("Enter account number to active: ");
+                        long activeAccountNumber = sc.nextLong();
+
+                        activePreparedStatement.setLong(1, activeAccountNumber);
+
+                        int activeRowsAffected = activePreparedStatement.executeUpdate();
+                        if (activeRowsAffected > 0) {
+                            System.out.println("Account Activated Successfully");
+                        } else {
+                            System.out.println("Account does not exists");
+                        }
                         break;
                     case 7:
                         willContinue = false;
@@ -469,8 +513,7 @@ public class App {
                             long withdrawAmount = sc.nextLong();
 
                             String balanceCheckQuery = "SELECT amount FROM user WHERE account_number = ?";
-                            PreparedStatement balanceCheckPreparedStatement = connection
-                                    .prepareStatement(balanceCheckQuery);
+                            PreparedStatement balanceCheckPreparedStatement = connection.prepareStatement(balanceCheckQuery);
                             balanceCheckPreparedStatement.setLong(1, accountNumber);
 
                             ResultSet balanceCheckResultSet = balanceCheckPreparedStatement.executeQuery();
@@ -504,7 +547,13 @@ public class App {
 
                         break;
                     case 5: // sent money to another account
+                        try {
+                            
+                        } catch (Exception e) {
 
+                        } finally {
+
+                        }
                         break;
                     case 6: // view transaction history
 
