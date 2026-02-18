@@ -17,8 +17,10 @@ public class App {
         try {
             Connection connection = DriverManager.getConnection(url, username, password);
             // connection.setAutoCommit(false);
-            System.out.println("Are you a ADMIN? (Y / N)");
+            System.out.println("-------------------------");
+            System.out.print("Are you a ADMIN? (Y / N): ");
             String isAdmin = sc.next();
+            System.out.println("-------------------------");
             if (isAdmin.toUpperCase().equals("Y")) {
                 admin(connection);
             } else {
@@ -32,8 +34,10 @@ public class App {
 
     static void admin(Connection connection) {
         try {
+            System.out.println("------------------------------");
             System.out.print("Enter ADMIN varification code: ");
             int code = sc.nextInt();
+            System.out.println("------------------------------");
             String query = "SELECT admin_code FROM admin_code_table";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -41,10 +45,14 @@ public class App {
             if (resultSet.next()) {
                 int originalCode = resultSet.getInt("admin_code");
                 if (code == originalCode) {
+                    System.out.println("------------");
                     System.out.println("Hello Admin");
+                    System.out.println("------------");
 
+                    System.out.println("-----------");
                     System.out.println("1. Sign Up");
                     System.out.println("2. Sign In");
+                    System.out.println("-----------");
                     System.out.print("Enter Choice: ");
                     int choice = sc.nextInt();
                     switch (choice) {
@@ -55,11 +63,15 @@ public class App {
                             signin_admin_account(connection);
                             break;
                         default:
+                            System.out.println("---------------");
                             System.out.println("Invalid Choice");
+                            System.out.println("---------------");
                             break;
                     }
                 } else {
+                    System.out.println("-------------------");
                     System.err.println("Invalid ADMIN code");
+                    System.out.println("-------------------");
                 }
             }
         } catch (SQLException e) {
@@ -71,6 +83,7 @@ public class App {
         try {
             String query = "INSERT INTO admin(name, username, pass) VALUES(?, ?, ?)";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
+            System.out.println("----------------------------------------");
             System.out.println("You will be provided an random ADMIN ID");
             sc.nextLine();
             System.out.print("Enter Name: ");
@@ -87,9 +100,13 @@ public class App {
             int rowsAffected = preparedStatement.executeUpdate();
 
             if (rowsAffected > 0) {
+                System.out.println("-----------------------------");
                 System.out.println("Account Created Successfully");
+                System.out.println("-----------------------------");
             } else {
+                System.out.println("-----------------------");
                 System.out.println("Account is not created");
+                System.out.println("-----------------------");
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -103,6 +120,7 @@ public class App {
             PreparedStatement preparedStatement = connection.prepareStatement(query);
 
             sc.nextLine();
+            System.out.println("-----------------------");
             System.out.print("Enter Username: ");
             String username = sc.nextLine();
             preparedStatement.setString(1, username);
@@ -115,15 +133,21 @@ public class App {
 
                 if (password == originalPass) {
                     String name = adminResultSet.getString("name");
+                    System.out.println("-------------------------");
                     System.out.println("Welcome " + name.toUpperCase());
-
+                    System.out.println("-------------------------");
+                    
                     admin_power(connection, adminResultSet);
-
+                    
                 } else {
+                    System.out.println("-------------------");
                     System.out.println("Incorrect Password");
+                    System.out.println("-------------------");
                 }
             } else {
+                System.out.println("-------------------");
                 System.out.println("Username not found");
+                System.out.println("-------------------");
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -174,6 +198,7 @@ public class App {
                                     long storedPass = adminResultSet.getLong("pass");
 
                                     sc.nextLine();
+                                    System.out.println("--------------------");
                                     System.out.print("Enter new name: ");
                                     String newName = sc.nextLine();
 
@@ -185,13 +210,19 @@ public class App {
                                         preparedStatement.setLong(2, storedId);
                                         int rowsAffected = preparedStatement.executeUpdate();
                                         if (rowsAffected > 0) {
+                                            System.out.println("--------------------------");
                                             System.out.println("Name Updated Successfully");
+                                            System.out.println("--------------------------");
                                             signin_admin_account(connection);
                                         } else {
+                                            System.out.println("--------------------");
                                             System.out.println("Name did not Update");
+                                            System.out.println("--------------------");
                                         }
                                     } else {
+                                        System.out.println("-------------------");
                                         System.out.println("Incorrect Password");
+                                        System.out.println("-------------------");
                                     }
                                 } catch (SQLException e) {
                                     System.out.println(e.getMessage());
@@ -207,6 +238,7 @@ public class App {
                                     long storedPass = adminResultSet.getLong("pass");
 
                                     sc.nextLine();
+                                    System.out.println("--------------------------");
                                     System.out.print("Enter new username: ");
                                     String newUsername = sc.nextLine();
 
@@ -218,13 +250,19 @@ public class App {
                                         preparedStatement.setLong(2, storedId);
                                         int rowsAffected = preparedStatement.executeUpdate();
                                         if (rowsAffected > 0) {
+                                            System.out.println("-----------------------------");
                                             System.out.println("Userame Updated Successfully");
+                                            System.out.println("-----------------------------");
                                             signin_admin_account(connection);
                                         } else {
+                                            System.out.println("------------------------");
                                             System.out.println("Username did not Update");
+                                            System.out.println("------------------------");
                                         }
                                     } else {
+                                        System.out.println("-------------------");
                                         System.out.println("Incorrect Password");
+                                        System.out.println("-------------------");
                                     }
                                 } catch (SQLException e) {
                                     System.out.println(e.getMessage());
@@ -239,10 +277,14 @@ public class App {
                                     long storedPass = adminResultSet.getLong("pass");
 
                                     sc.nextLine();
+                                    System.out.println("----------------------");
                                     System.out.print("Enter new password: ");
+                                    System.out.println("----------------------");
                                     long newPass = sc.nextLong();
 
+                                    System.out.println("------------------------------------------");
                                     System.out.print("Enter old password to update the password: ");
+                                    System.out.println("------------------------------------------");
                                     long oldPass = sc.nextLong();
 
                                     if (oldPass == storedPass) {
@@ -250,14 +292,20 @@ public class App {
                                         preparedStatement.setLong(2, storedId);
                                         int rowsAffected = preparedStatement.executeUpdate();
                                         if (rowsAffected > 0) {
+                                            System.out.println("------------------------------");
                                             System.out.println("Password Updated Successfully");
+                                            System.out.println("------------------------------");
                                             willContinue = false;
                                             signin_admin_account(connection);
                                         } else {
+                                            System.out.println("------------------------");
                                             System.out.println("Password did not Update");
+                                            System.out.println("------------------------");
                                         }
                                     } else {
+                                        System.out.println("-------------------");
                                         System.out.println("Incorrect Password");
+                                        System.out.println("-------------------");
                                     }
                                 } catch (SQLException e) {
                                     System.out.println(e.getMessage());
@@ -267,7 +315,9 @@ public class App {
                                 break;
 
                             default:
+                                System.out.println("---------------");
                                 System.out.println("Invalid Choice");
+                                System.out.println("---------------");
                                 break;
                         }
                         break;
@@ -302,6 +352,7 @@ public class App {
                         String suspendQuery = "UPDATE user SET isSuspend = true WHERE account_number = ?";
                         PreparedStatement suspendPreparedStatement = connection.prepareStatement(suspendQuery);
 
+                        System.out.println("----------------------------------");
                         System.out.print("Enter account number to suspend: ");
                         long suspendAccountNumber = sc.nextLong();
 
@@ -309,9 +360,13 @@ public class App {
 
                         int suspendRowsAffected = suspendPreparedStatement.executeUpdate();
                         if (suspendRowsAffected > 0) {
+                            System.out.println("-------------------------------");
                             System.out.println("Account Suspended Successfully");
+                            System.out.println("-------------------------------");
                         } else {
+                            System.out.println("------------------------");
                             System.out.println("Account does not exists");
+                            System.out.println("------------------------");
                         }
 
                         break;
@@ -319,6 +374,7 @@ public class App {
                         String activeQuery = "UPDATE user SET isSuspend = false WHERE account_number = ?";
                         PreparedStatement activePreparedStatement = connection.prepareStatement(activeQuery);
 
+                        System.out.println("----------------------------------");
                         System.out.print("Enter account number to active: ");
                         long activeAccountNumber = sc.nextLong();
 
@@ -326,9 +382,13 @@ public class App {
 
                         int activeRowsAffected = activePreparedStatement.executeUpdate();
                         if (activeRowsAffected > 0) {
+                            System.out.println("-------------------------------");
                             System.out.println("Account Activated Successfully");
+                            System.out.println("-------------------------------");
                         } else {
+                            System.out.println("------------------------");
                             System.out.println("Account does not exists");
+                            System.out.println("------------------------");
                         }
                         break;
                     case 7:
@@ -347,11 +407,12 @@ public class App {
     }
 
     static void user(Connection connection) {
+        System.out.println("-----------");
         System.out.println("Hello User");
-        System.out.println("-------------------------");
+        System.out.println("-----------");
         System.out.println("1. Sign Up");
         System.out.println("2. Sign In");
-        System.out.println("-------------------------");
+        System.out.println("-----------");
         System.out.print("Enter choice: ");
 
         int choice = sc.nextInt();
@@ -363,7 +424,9 @@ public class App {
                 signin_user_account(connection);
                 break;
             default:
+                System.out.println("---------------");
                 System.out.println("Invalid Choice");
+                System.out.println("---------------");
                 break;
         }
 
@@ -373,6 +436,7 @@ public class App {
         try {
             String query = "INSERT INTO user(name, pass, pin, amount) VALUES(?, ?, ?, ?)";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
+            System.out.println("---------------------------------------");
             System.out.println("You will be provided an random USER ID");
             sc.nextLine();
             System.out.print("Enter Name: ");
@@ -392,9 +456,13 @@ public class App {
             int rowsAffected = preparedStatement.executeUpdate();
 
             if (rowsAffected > 0) {
+                System.out.println("-----------------------------");
                 System.out.println("Account Created Successfully");
+                System.out.println("-----------------------------");
             } else {
+                System.out.println("-----------------------");
                 System.out.println("Account is not Created");
+                System.out.println("-----------------------");
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -407,6 +475,7 @@ public class App {
             PreparedStatement preparedStatement = connection.prepareStatement(query);
 
             sc.nextLine();
+            System.out.println("---------------------");
             System.out.print("Enter Account Number: ");
             long accountNumber = sc.nextLong();
             preparedStatement.setLong(1, accountNumber);
@@ -415,11 +484,15 @@ public class App {
             if (userResultSet.next()) {
                 boolean isDeleted = userResultSet.getBoolean("isDeleted");
                 if (isDeleted) {
+                    System.out.println("-------------------------------------");
                     System.out.println("Your account does not exists anymore");
+                    System.out.println("-------------------------------------");
                 } else {
                     boolean isSuspend = userResultSet.getBoolean("isSuspend");
                     if (isSuspend) {
+                        System.out.println("--------------------------");
                         System.out.println("Your Account is Suspended");
+                        System.out.println("--------------------------");
                     } else {
                         long originalPass = userResultSet.getLong("pass");
                         System.out.print("Enter Password: ");
@@ -427,18 +500,24 @@ public class App {
 
                         if (password == originalPass) {
                             String name = userResultSet.getString("name");
+                            System.out.println("--------------------------");
                             System.out.println("Welcome " + name.toUpperCase());
+                            System.out.println("--------------------------");
 
                             user_power(connection, userResultSet);
 
                         } else {
+                            System.out.println("-------------------");
                             System.out.println("Incorrect Password");
+                            System.out.println("-------------------");
                         }
                     }
                 }
 
             } else {
+                System.out.println("------------------");
                 System.out.println("Account not found");
+                System.out.println("------------------");
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -488,7 +567,9 @@ public class App {
 
                         ResultSet resultSet = amountPreparedStatement.executeQuery();
                         if (resultSet.next()) {
+                            System.out.println("-------------------------");
                             System.out.println("Available Balance: " + resultSet.getLong("amount"));
+                            System.out.println("-------------------------");
                         }
                         break;
                     case 3:
@@ -497,6 +578,7 @@ public class App {
                             String depositQuery = "UPDATE user SET amount = amount + ? WHERE account_number = ?";
                             PreparedStatement depositPreparedStatement = connection.prepareStatement(depositQuery);
 
+                            System.out.println("---------------------");
                             System.out.print("Enter deposit amount: ");
                             long depositAmount = sc.nextLong();
 
@@ -507,16 +589,24 @@ public class App {
                                 int depositRowsAffected = depositPreparedStatement.executeUpdate();
 
                                 if (depositRowsAffected > 0) {
+                                    System.out.println("------------------------------------");
                                     System.out.println(depositAmount + " rs Added Successfully");
+                                    System.out.println("------------------------------------");
                                 } else {
+                                    System.out.println("--------------------");
                                     System.out.println("Amount is not added");
+                                    System.out.println("--------------------");
                                 }
                             } else {
+                                System.out.println("------------------------");
                                 System.out.println("Amount must be positive");
+                                System.out.println("------------------------");
                             }
                         } catch (SQLException e) {
                             connection.rollback();
+                            System.out.println("---------------------------------------");
                             System.out.println("Transaction Failed" + e.getMessage());
+                            System.out.println("---------------------------------------");
                         } finally {
                             connection.setAutoCommit(true);
                         }
@@ -528,6 +618,7 @@ public class App {
                             String withdrawQuery = "UPDATE user SET amount = amount - ? WHERE account_number = ?";
                             PreparedStatement withdrawPreparedStatement = connection.prepareStatement(withdrawQuery);
 
+                            System.out.println("-----------------------");
                             System.out.print("Enter withdrawl amount: ");
                             long withdrawAmount = sc.nextLong();
 
@@ -548,19 +639,27 @@ public class App {
 
                                     if (withdrawRowsAffected > 0) {
                                         connection.commit();
+                                        System.out.println("-----------------------------------------");
                                         System.out.println(withdrawAmount + " rs Withdrawn Successfully");
+                                        System.out.println("-----------------------------------------");
                                     } else {
                                         connection.rollback();
+                                        System.out.println("------------------------");
                                         System.out.println("Amount is not withdrawn");
+                                        System.out.println("------------------------");
                                     }
                                 } else {
+                                    System.out.println("---------------------");
                                     System.out.println("Insufficient Balance");
+                                    System.out.println("---------------------");
                                     connection.rollback();
                                 }
                             }
                         } catch (SQLException e) {
                             connection.rollback();
+                            System.out.println("-------------------------------------");
                             System.out.println("Transaction Failed: " + e.getMessage());
+                            System.out.println("-------------------------------------");
                         } finally {
                             connection.setAutoCommit(true);
                         }
@@ -578,7 +677,7 @@ public class App {
                     case 6: // view transaction history
 
                         break;
-                    case 7: // update account details
+                    case 7:
                         System.out.println("-------------------------");
                         System.out.println("1. Change Name");
                         System.out.println("2. Change Password");
@@ -599,6 +698,7 @@ public class App {
                                     long storedPass = userResultSet.getLong("pass");
 
                                     sc.nextLine();
+                                    System.out.println("-------------------------");
                                     System.out.print("Enter new name: ");
                                     String newName = sc.nextLine();
 
@@ -610,13 +710,19 @@ public class App {
                                         updateNamePreparedStatement.setLong(2, accountNumber);
                                         int updateNameRowsAffected = updateNamePreparedStatement.executeUpdate();
                                         if (updateNameRowsAffected > 0) {
+                                            System.out.println("--------------------------");
                                             System.out.println("Name Updated Successfully");
+                                            System.out.println("--------------------------");
                                             signin_user_account(connection);
                                         } else {
+                                            System.out.println("--------------------");
                                             System.out.println("Name did not Update");
+                                            System.out.println("--------------------");
                                         }
                                     } else {
+                                        System.out.println("-------------------");
                                         System.out.println("Incorrect Password");
+                                        System.out.println("-------------------");
                                     }
                                 } catch (SQLException e) {
                                     System.out.println(e.getMessage());
@@ -633,6 +739,7 @@ public class App {
                                     long storedPass = userResultSet.getLong("pass");
 
                                     sc.nextLine();
+                                    System.out.println("-------------------");
                                     System.out.print("Enter new password: ");
                                     long newPassword = sc.nextLong();
 
@@ -644,13 +751,19 @@ public class App {
                                         updatePassPreparedStatement.setLong(2, accountNumber);
                                         int updatePassRowsAffected = updatePassPreparedStatement.executeUpdate();
                                         if (updatePassRowsAffected > 0) {
+                                            System.out.println("------------------------------");
                                             System.out.println("Password Updated Successfully");
+                                            System.out.println("------------------------------");
                                             signin_user_account(connection);
                                         } else {
+                                            System.out.println("------------------------");
                                             System.out.println("Password did not Update");
+                                            System.out.println("------------------------");
                                         }
                                     } else {
+                                        System.out.println("-------------------");
                                         System.out.println("Incorrect Password");
+                                        System.out.println("-------------------");
                                     }
                                 } catch (SQLException e) {
                                     System.out.println(e.getMessage());
@@ -666,6 +779,7 @@ public class App {
                                     long storedPass = userResultSet.getLong("pass");
 
                                     sc.nextLine();
+                                    System.out.println("---------------------------------");
                                     System.out.print("Enter new pin: ");
                                     long newPass = sc.nextLong();
 
@@ -677,14 +791,20 @@ public class App {
                                         updatePinPreparedStatement.setLong(2, storedAccountNumber);
                                         int updatePinRowsAffected = updatePinPreparedStatement.executeUpdate();
                                         if (updatePinRowsAffected > 0) {
+                                            System.out.println("-------------------------");
                                             System.out.println("PIN Updated Successfully");
+                                            System.out.println("-------------------------");
                                             willContinue = false;
                                             signin_user_account(connection);
                                         } else {
+                                            System.out.println("-------------------");
                                             System.out.println("PIN did not Update");
+                                            System.out.println("-------------------");
                                         }
                                     } else {
+                                        System.out.println("-------------------");
                                         System.out.println("Incorrect Password");
+                                        System.out.println("-------------------");
                                     }
                                 } catch (SQLException e) {
                                     System.out.println(e.getMessage());
@@ -693,7 +813,9 @@ public class App {
                             case 4:
                                 break;
                             default:
+                                System.out.println("---------------");
                                 System.out.println("Invalid Choice");
+                                System.out.println("---------------");
                                 break;
                         }
 
@@ -703,11 +825,12 @@ public class App {
                             String deleteQuery = "UPDATE user SET isDeleted = true WHERE account_number = ?";
                             PreparedStatement deletePreparedStatement = connection.prepareStatement(deleteQuery);
 
+                            System.out.println("------------------------------------------");
                             System.out.print("Enter account number to delete: ");
                             long deleteAccountNumber = sc.nextLong();
 
                             deletePreparedStatement.setLong(1, deleteAccountNumber);
-                            
+
                             long storedPass = userResultSet.getLong("pass");
                             System.out.print("Enter password to delete the account: ");
                             long enteredPass = sc.nextLong();
@@ -715,17 +838,25 @@ public class App {
                             if (enteredPass == storedPass) {
                                 int deleteRowsAffected = deletePreparedStatement.executeUpdate();
                                 if (deleteRowsAffected > 0) {
+                                    System.out.println("-----------------------------");
                                     System.out.println("Account deleted Successfully");
+                                    System.out.println("-----------------------------");
                                     signin_user_account(connection);
-
+                                    
                                 } else {
+                                    System.out.println("------------------------");
                                     System.out.println("Account does not exists");
+                                    System.out.println("------------------------");
                                 }
                             } else {
+                                System.out.println("----------------------------------------------");
                                 System.out.println("Incorrect Password. Cannot delete the account");
+                                System.out.println("----------------------------------------------");
                             }
                         } catch (SQLException e) {
+                            System.out.println("------------------------");
                             System.out.println("Account does not exists");
+                            System.out.println("------------------------");
                         }
 
                         break;
