@@ -143,7 +143,7 @@ public class App {
                 System.out.println("6. Active User"); // will be a loop
                 System.out.println("7. Exit"); // will be a loop
                 System.out.println("-------------------------");
-                
+
                 System.out.print("Enter Choice: ");
                 int choice = sc.nextInt();
                 switch (choice) {
@@ -355,7 +355,7 @@ public class App {
             PreparedStatement preparedStatement = connection.prepareStatement(query);
 
             sc.nextLine();
-            System.out.print("Enter ID: ");
+            System.out.print("Enter Account Number: ");
             long username = sc.nextLong();
             preparedStatement.setLong(1, username);
             ResultSet userResultSet = preparedStatement.executeQuery();
@@ -383,6 +383,149 @@ public class App {
     }
 
     static void user_power(Connection connection, ResultSet userResultSet) {
-        System.out.println("User Power");
+
+        try {
+            long accountNumber = userResultSet.getLong("account_number");
+            boolean willContinue = true;
+            while (willContinue) {
+                System.out.println("-------------------------");
+                System.out.println("1. View Account Details");
+                System.out.println("2. View Balance");
+                System.out.println("3. Deposit Amount");
+                System.out.println("4. Withdraw Amount");
+                System.out.println("5. Send Money");
+                System.out.println("6. Transaction History");
+                System.out.println("7. Update Account Details");
+                System.out.println("8. Delete Account");
+                System.out.println("9. Exit");
+                System.out.println("-------------------------");
+
+                System.out.print("Enter Choice: ");
+
+                int choice = sc.nextInt();
+                switch (choice) {
+                    case 1:
+                        String accountQuery = "SELECT * FROM user WHERE account_number = ?";
+                        PreparedStatement accountPreparedStatement = connection.prepareStatement(accountQuery);
+                        accountPreparedStatement.setLong(1, accountNumber);
+
+                        ResultSet accountResultSet = accountPreparedStatement.executeQuery();
+                        if (accountResultSet.next()) {
+                            System.out.println("-------------------------");
+                            System.out.println("Account Number: " + accountResultSet.getLong("account_number"));
+                            System.out.println("Name: " + accountResultSet.getString("name"));
+                            System.out.println("Available Balance: " + accountResultSet.getLong("amount"));
+                            System.out.println("-------------------------");
+                        }
+                        break;
+                    case 2:
+                        String balanceQuery = "SELECT amount FROM user WHERE account_number = ?";
+                        PreparedStatement amountPreparedStatement = connection.prepareStatement(balanceQuery);
+                        amountPreparedStatement.setLong(1, accountNumber);
+
+                        ResultSet resultSet = amountPreparedStatement.executeQuery();
+                        if (resultSet.next()) {
+                            System.out.println("Available Balance: " + resultSet.getLong("amount"));
+                        }
+                        break;
+                    case 3:
+                        try {
+                            connection.setAutoCommit(false);
+                            String depositQuery = "UPDATE user SET amount = amount + ? WHERE account_number = ?";
+                            PreparedStatement depositPreparedStatement = connection.prepareStatement(depositQuery);
+
+                            System.out.print("Enter deposit amount: ");
+                            long depositAmount = sc.nextLong();
+
+                            if (depositAmount > 0) {
+                                depositPreparedStatement.setLong(1, depositAmount);
+                                depositPreparedStatement.setLong(2, accountNumber);
+
+                                int depositRowsAffected = depositPreparedStatement.executeUpdate();
+
+                                if (depositRowsAffected > 0) {
+                                    System.out.println(depositAmount + " rs Added Successfully");
+                                } else {
+                                    System.out.println("Amount is not added");
+                                }
+                            } else {
+                                System.out.println("Amount must be positive");
+                            }
+                        } catch (SQLException e) {
+                            connection.rollback();
+                            System.out.println("Transaction Failed" + e.getMessage());
+                        } finally {
+                            connection.setAutoCommit(true);
+                        }
+
+                        break;
+                    case 4:
+                        try {
+                            connection.setAutoCommit(false);
+                            String withdrawQuery = "UPDATE user SET amount = amount - ? WHERE account_number = ?";
+                            PreparedStatement withdrawPreparedStatement = connection.prepareStatement(withdrawQuery);
+
+                            System.out.print("Enter withdrawl amount: ");
+                            long withdrawAmount = sc.nextLong();
+
+                            String balanceCheckQuery = "SELECT amount FROM user WHERE account_number = ?";
+                            PreparedStatement balanceCheckPreparedStatement = connection
+                                    .prepareStatement(balanceCheckQuery);
+                            balanceCheckPreparedStatement.setLong(1, accountNumber);
+
+                            ResultSet balanceCheckResultSet = balanceCheckPreparedStatement.executeQuery();
+                            if (balanceCheckResultSet.next()) {
+                                long avalBalance = balanceCheckResultSet.getLong("amount");
+                                if (withdrawAmount > 0 && avalBalance >= withdrawAmount) {
+
+                                    withdrawPreparedStatement.setLong(1, withdrawAmount);
+                                    withdrawPreparedStatement.setLong(2, accountNumber);
+
+                                    int withdrawRowsAffected = withdrawPreparedStatement.executeUpdate();
+
+                                    if (withdrawRowsAffected > 0) {
+                                        connection.commit();
+                                        System.out.println(withdrawAmount + " rs Withdrawn Successfully");
+                                    } else {
+                                        connection.rollback();
+                                        System.out.println("Amount is not withdrawn");
+                                    }
+                                } else {
+                                    System.out.println("Insufficient Balance");
+                                    connection.rollback();
+                                }
+                            }
+                        } catch (SQLException e) {
+                            connection.rollback();
+                            System.out.println("Transaction Failed: " + e.getMessage());
+                        } finally {
+                            connection.setAutoCommit(true);
+                        }
+
+                        break;
+                    case 5: // sent money to another account
+
+                        break;
+                    case 6: // view transaction history
+
+                        break;
+                    case 7: // update account details
+
+                        break;
+                    case 8: // delete account
+
+                        break;
+                    case 9:
+                        willContinue = false;
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
     }
 }
