@@ -180,6 +180,11 @@ public class App {
                         System.out.println("ID: " + adminResultSet.getLong("id"));
                         System.out.println("Name: " + adminResultSet.getString("name"));
                         System.out.println("Username: " + adminResultSet.getString("username"));
+                        LocalDateTime adminDateTime = adminResultSet.getObject("created_on", LocalDateTime.class);
+                        DateTimeFormatter adminCreatedOnformatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+                        String adminCreatedOnformattedDate = adminDateTime.format(adminCreatedOnformatter);
+
+                        System.out.println("Created On: " + adminCreatedOnformattedDate);
                         System.out.println("-------------------------");
                         break;
                     case 2:
@@ -351,25 +356,30 @@ public class App {
                         break;
                     case 4:
                         String transactionHistoryQuery = "SELECT * FROM user_transaction";
-                        PreparedStatement transactionHistoryPreparedStatement = connection.prepareStatement(transactionHistoryQuery);
+                        PreparedStatement transactionHistoryPreparedStatement = connection
+                                .prepareStatement(transactionHistoryQuery);
 
                         ResultSet transactionHistoryResultSet = transactionHistoryPreparedStatement.executeQuery();
                         while (transactionHistoryResultSet.next()) {
-                                System.out.println("-------------------------");
+                            System.out.println("-------------------------");
 
-                                System.out.println("Transaction ID: " + transactionHistoryResultSet.getLong("id"));
-                                System.out.println("From Whom Account Number: " + transactionHistoryResultSet.getLong("fromWhomAccNo"));
-                                System.out.println("From Whom Name: " + transactionHistoryResultSet.getString("fromWhomName"));
-                                System.out.println("To Whom Account Number: " + transactionHistoryResultSet.getLong("toWhomAccNo"));
-                                System.out.println("To Whom Name: " + transactionHistoryResultSet.getString("toWhomName"));
-                                System.out.println("Amount: " + transactionHistoryResultSet.getLong("amount"));
-                                
-                                LocalDateTime dateTime = transactionHistoryResultSet.getObject("transaction_date", LocalDateTime.class);
-                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-                                String formattedDate = dateTime.format(formatter);
-                                
-                                System.out.println("Transaction Date: " + formattedDate);
-                                System.out.println("-------------------------");
+                            System.out.println("Transaction ID: " + transactionHistoryResultSet.getLong("id"));
+                            System.out.println("From Whom Account Number: "
+                                    + transactionHistoryResultSet.getLong("fromWhomAccNo"));
+                            System.out.println(
+                                    "From Whom Name: " + transactionHistoryResultSet.getString("fromWhomName"));
+                            System.out.println(
+                                    "To Whom Account Number: " + transactionHistoryResultSet.getLong("toWhomAccNo"));
+                            System.out.println("To Whom Name: " + transactionHistoryResultSet.getString("toWhomName"));
+                            System.out.println("Amount: " + transactionHistoryResultSet.getLong("amount"));
+
+                            LocalDateTime userDateTime = transactionHistoryResultSet.getObject("transaction_date",
+                                    LocalDateTime.class);
+                            DateTimeFormatter userCreatedOnformatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+                            String userCreatedOnformattedDate = userDateTime.format(userCreatedOnformatter);
+
+                            System.out.println("Transaction Date: " + userCreatedOnformattedDate);
+                            System.out.println("-------------------------");
                         }
 
                         break;
@@ -416,10 +426,11 @@ public class App {
                             System.out.println("------------------------");
                         }
                         break;
-                    
-                    case 7: 
+
+                    case 7:
                         String deletedAccountQuery = "SELECT * FROM user WHERE isDeleted = true";
-                        PreparedStatement deletedAccountPreparedStatement = connection.prepareStatement(deletedAccountQuery);
+                        PreparedStatement deletedAccountPreparedStatement = connection
+                                .prepareStatement(deletedAccountQuery);
 
                         ResultSet deletedAccountResultSet = deletedAccountPreparedStatement.executeQuery();
                         System.out.println("---------------------");
@@ -432,18 +443,21 @@ public class App {
                             System.out.println("-------------------------");
                         }
                         break;
-                    case 8: 
+                    case 8:
                         String suspendedAccountQuery = "SELECT * FROM user WHERE isSuspend = true";
-                        PreparedStatement suspendedAccountPreparedStatement = connection.prepareStatement(suspendedAccountQuery);
+                        PreparedStatement suspendedAccountPreparedStatement = connection
+                                .prepareStatement(suspendedAccountQuery);
 
                         ResultSet suspendedAccountResultSet = suspendedAccountPreparedStatement.executeQuery();
                         System.out.println("---------------------");
                         System.out.println("Suspended Account List");
                         while (suspendedAccountResultSet.next()) {
                             System.out.println("-------------------------");
-                            System.out.println("Account Number: " + suspendedAccountResultSet.getLong("account_number"));
+                            System.out
+                                    .println("Account Number: " + suspendedAccountResultSet.getLong("account_number"));
                             System.out.println("Name: " + suspendedAccountResultSet.getString("name"));
-                            System.out.println("Last Available Balance: " + suspendedAccountResultSet.getLong("amount"));
+                            System.out
+                                    .println("Last Available Balance: " + suspendedAccountResultSet.getLong("amount"));
                             System.out.println("-------------------------");
                         }
                         break;
@@ -516,6 +530,7 @@ public class App {
                 System.out.println("-----------------------------");
                 System.out.println("Account Created Successfully");
                 System.out.println("-----------------------------");
+
             } else {
                 System.out.println("-----------------------");
                 System.out.println("Account is not Created");
@@ -613,6 +628,12 @@ public class App {
                             System.out.println("Account Number: " + accountResultSet.getLong("account_number"));
                             System.out.println("Name: " + accountResultSet.getString("name"));
                             System.out.println("Available Balance: " + accountResultSet.getLong("amount"));
+
+                            LocalDateTime dateTime = accountResultSet.getObject("created_on", LocalDateTime.class);
+                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+                            String formattedDate = dateTime.format(formatter);
+
+                            System.out.println("Created On: " + formattedDate);
                             System.out.println("-------------------------");
                         }
                         break;
@@ -730,7 +751,7 @@ public class App {
 
                         }
                         break;
-                    case 6: 
+                    case 6:
                         String transactionHistoryQuery = "SELECT * FROM user_transaction WHERE fromWhomAccNo = ? OR toWhomAccNo = ?";
                         PreparedStatement transactionHistoryPreparedStatement = connection
                                 .prepareStatement(transactionHistoryQuery);
@@ -743,11 +764,12 @@ public class App {
                                 System.out.println("-------------------------");
                                 System.out.println("Name: " + transactionHistoryResultSet.getString("toWhomName"));
                                 System.out.println("Amount: " + transactionHistoryResultSet.getLong("amount"));
-                                
-                                LocalDateTime dateTime = transactionHistoryResultSet.getObject("transaction_date", LocalDateTime.class);
+
+                                LocalDateTime dateTime = transactionHistoryResultSet.getObject("transaction_date",
+                                        LocalDateTime.class);
                                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
                                 String formattedDate = dateTime.format(formatter);
-                                
+
                                 System.out.println("Amount Received: " + formattedDate);
                                 System.out.println("-------------------------");
 
@@ -755,11 +777,12 @@ public class App {
                                 System.out.println("-------------------------");
                                 System.out.println("Name: " + transactionHistoryResultSet.getString("fromWhomName"));
                                 System.out.println("Amount: +" + transactionHistoryResultSet.getLong("amount"));
-                                
-                                LocalDateTime dateTime = transactionHistoryResultSet.getObject("transaction_date", LocalDateTime.class);
+
+                                LocalDateTime dateTime = transactionHistoryResultSet.getObject("transaction_date",
+                                        LocalDateTime.class);
                                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
                                 String formattedDate = dateTime.format(formatter);
-                                
+
                                 System.out.println("Amount Received: " + formattedDate);
                                 System.out.println("-------------------------");
                             }
