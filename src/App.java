@@ -980,9 +980,9 @@ public class App {
                         break;
 
                     default:
-                        System.out.println("---------------"); 
+                        
                         System.out.println("Invalid Choice");
-                        System.out.println("---------------");
+
                         break;
                 }
             }
