@@ -375,7 +375,8 @@ public class App {
 
                             LocalDateTime userDateTime = transactionHistoryResultSet.getObject("transaction_date",
                                     LocalDateTime.class);
-                            DateTimeFormatter userCreatedOnformatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+                            DateTimeFormatter userCreatedOnformatter = DateTimeFormatter
+                                    .ofPattern("dd-MM-yyyy HH:mm:ss");
                             String userCreatedOnformattedDate = userDateTime.format(userCreatedOnformatter);
 
                             System.out.println("Transaction Date: " + userCreatedOnformattedDate);
@@ -554,11 +555,13 @@ public class App {
             ResultSet userResultSet = preparedStatement.executeQuery();
 
             if (userResultSet.next()) {
+
                 boolean isDeleted = userResultSet.getBoolean("isDeleted");
                 if (isDeleted) {
                     System.out.println("-------------------------------------");
                     System.out.println("Your account does not exists anymore");
                     System.out.println("-------------------------------------");
+                    user(connection);
                 } else {
                     boolean isSuspend = userResultSet.getBoolean("isSuspend");
                     if (isSuspend) {
@@ -947,12 +950,23 @@ public class App {
                             long enteredPass = sc.nextLong();
 
                             if (enteredPass == storedPass) {
+                                // String selectForDeleteTableQuery = "SELECT * FROM user WHERE account_number = ?";
+                                //     PreparedStatement selectForDeleteTablePreparedStatement = connection.prepareStatement(selectForDeleteTableQuery);
+                                //     selectForDeleteTablePreparedStatement.setLong(1, deleteAccountNumber);
+                                //     ResultSet selectForDeleteTableResultSet = selectForDeleteTablePreparedStatement.executeQuery();
+
+                                //     String insertDeleteTableQuery = "INSERT INTO deleted_accounts (account_number, name, last_balance) VALUES(?, ?, ?) account_number = ?";
+                                //     PreparedStatement insertDeleteTablePreparedStatement = connection.prepareStatement(insertDeleteTableQuery);
+                                //     insertDeleteTablePreparedStatement.setLong(1, deleteAccountNumber);
+                                //     insertDeleteTablePreparedStatement.setString(2, selectForDeleteTableResultSet.getString("name"));
+                                //     insertDeleteTablePreparedStatement.setLong(3, selectForDeleteTableResultSet.getLong("amount"));
+                                //     insertDeleteTablePreparedStatement.executeUpdate();
                                 int deleteRowsAffected = deletePreparedStatement.executeUpdate();
                                 if (deleteRowsAffected > 0) {
                                     System.out.println("-----------------------------");
                                     System.out.println("Account deleted Successfully");
                                     System.out.println("-----------------------------");
-                                    signin_user_account(connection);
+                                    user(connection);
 
                                 } else {
                                     System.out.println("------------------------");
