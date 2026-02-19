@@ -994,7 +994,7 @@ public class App {
 }
 
 
-// String selectForDeleteTableQuery = "SELECT * FROM user WHERE account_number =
+                                // String selectForDeleteTableQuery = "SELECT * FROM user WHERE account_number =
                                 // ?";
                                 // PreparedStatement selectForDeleteTablePreparedStatement =
                                 // connection.prepareStatement(selectForDeleteTableQuery);
