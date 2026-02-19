@@ -3,6 +3,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 public class App {
@@ -136,9 +138,9 @@ public class App {
                     System.out.println("-------------------------");
                     System.out.println("Welcome " + name.toUpperCase());
                     System.out.println("-------------------------");
-                    
+
                     admin_power(connection, adminResultSet);
-                    
+
                 } else {
                     System.out.println("-------------------");
                     System.out.println("Incorrect Password");
@@ -163,9 +165,11 @@ public class App {
                 System.out.println("2. Change Your Details");
                 System.out.println("3. View User Details");
                 System.out.println("4. View User Transactions");
-                System.out.println("5. Suspend User"); // will be a loop
-                System.out.println("6. Active User"); // will be a loop
-                System.out.println("7. Exit"); // will be a loop
+                System.out.println("5. Suspend User");
+                System.out.println("6. Active User");
+                System.out.println("7. View Deleted Account");
+                System.out.println("8. View Suspended Account");
+                System.out.println("9. Exit");
                 System.out.println("-------------------------");
 
                 System.out.print("Enter Choice: ");
@@ -346,6 +350,27 @@ public class App {
 
                         break;
                     case 4:
+                        String transactionHistoryQuery = "SELECT * FROM user_transaction";
+                        PreparedStatement transactionHistoryPreparedStatement = connection.prepareStatement(transactionHistoryQuery);
+
+                        ResultSet transactionHistoryResultSet = transactionHistoryPreparedStatement.executeQuery();
+                        while (transactionHistoryResultSet.next()) {
+                                System.out.println("-------------------------");
+
+                                System.out.println("Transaction ID: " + transactionHistoryResultSet.getLong("id"));
+                                System.out.println("From Whom Account Number: " + transactionHistoryResultSet.getLong("fromWhomAccNo"));
+                                System.out.println("From Whom Name: " + transactionHistoryResultSet.getString("fromWhomName"));
+                                System.out.println("To Whom Account Number: " + transactionHistoryResultSet.getLong("toWhomAccNo"));
+                                System.out.println("To Whom Name: " + transactionHistoryResultSet.getString("toWhomName"));
+                                System.out.println("Amount: " + transactionHistoryResultSet.getLong("amount"));
+                                
+                                LocalDateTime dateTime = transactionHistoryResultSet.getObject("transaction_date", LocalDateTime.class);
+                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+                                String formattedDate = dateTime.format(formatter);
+                                
+                                System.out.println("Transaction Date: " + formattedDate);
+                                System.out.println("-------------------------");
+                        }
 
                         break;
                     case 5:
@@ -391,7 +416,39 @@ public class App {
                             System.out.println("------------------------");
                         }
                         break;
-                    case 7:
+                    
+                    case 7: 
+                        String deletedAccountQuery = "SELECT * FROM user WHERE isDeleted = true";
+                        PreparedStatement deletedAccountPreparedStatement = connection.prepareStatement(deletedAccountQuery);
+
+                        ResultSet deletedAccountResultSet = deletedAccountPreparedStatement.executeQuery();
+                        System.out.println("---------------------");
+                        System.out.println("Deleted Account List");
+                        while (deletedAccountResultSet.next()) {
+                            System.out.println("-------------------------");
+                            System.out.println("Account Number: " + deletedAccountResultSet.getLong("account_number"));
+                            System.out.println("Name: " + deletedAccountResultSet.getString("name"));
+                            System.out.println("Last Available Balance: " + deletedAccountResultSet.getLong("amount"));
+                            System.out.println("-------------------------");
+                        }
+                        break;
+                    case 8: 
+                        String suspendedAccountQuery = "SELECT * FROM user WHERE isSuspend = true";
+                        PreparedStatement suspendedAccountPreparedStatement = connection.prepareStatement(suspendedAccountQuery);
+
+                        ResultSet suspendedAccountResultSet = suspendedAccountPreparedStatement.executeQuery();
+                        System.out.println("---------------------");
+                        System.out.println("Suspended Account List");
+                        while (suspendedAccountResultSet.next()) {
+                            System.out.println("-------------------------");
+                            System.out.println("Account Number: " + suspendedAccountResultSet.getLong("account_number"));
+                            System.out.println("Name: " + suspendedAccountResultSet.getString("name"));
+                            System.out.println("Last Available Balance: " + suspendedAccountResultSet.getLong("amount"));
+                            System.out.println("-------------------------");
+                        }
+                        break;
+
+                    case 9:
                         willContinue = false;
                         break;
 
@@ -513,7 +570,6 @@ public class App {
                         }
                     }
                 }
-
             } else {
                 System.out.println("------------------");
                 System.out.println("Account not found");
@@ -674,8 +730,40 @@ public class App {
 
                         }
                         break;
-                    case 6: // view transaction history
+                    case 6: 
+                        String transactionHistoryQuery = "SELECT * FROM user_transaction WHERE fromWhomAccNo = ? OR toWhomAccNo = ?";
+                        PreparedStatement transactionHistoryPreparedStatement = connection
+                                .prepareStatement(transactionHistoryQuery);
+                        transactionHistoryPreparedStatement.setLong(1, accountNumber);
+                        transactionHistoryPreparedStatement.setLong(2, accountNumber);
 
+                        ResultSet transactionHistoryResultSet = transactionHistoryPreparedStatement.executeQuery();
+                        while (transactionHistoryResultSet.next()) {
+                            if (transactionHistoryResultSet.getLong("fromWhomAccNo") == accountNumber) {
+                                System.out.println("-------------------------");
+                                System.out.println("Name: " + transactionHistoryResultSet.getString("toWhomName"));
+                                System.out.println("Amount: " + transactionHistoryResultSet.getLong("amount"));
+                                
+                                LocalDateTime dateTime = transactionHistoryResultSet.getObject("transaction_date", LocalDateTime.class);
+                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+                                String formattedDate = dateTime.format(formatter);
+                                
+                                System.out.println("Amount Received: " + formattedDate);
+                                System.out.println("-------------------------");
+
+                            } else {
+                                System.out.println("-------------------------");
+                                System.out.println("Name: " + transactionHistoryResultSet.getString("fromWhomName"));
+                                System.out.println("Amount: +" + transactionHistoryResultSet.getLong("amount"));
+                                
+                                LocalDateTime dateTime = transactionHistoryResultSet.getObject("transaction_date", LocalDateTime.class);
+                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+                                String formattedDate = dateTime.format(formatter);
+                                
+                                System.out.println("Amount Received: " + formattedDate);
+                                System.out.println("-------------------------");
+                            }
+                        }
                         break;
                     case 7:
                         System.out.println("-------------------------");
@@ -842,7 +930,7 @@ public class App {
                                     System.out.println("Account deleted Successfully");
                                     System.out.println("-----------------------------");
                                     signin_user_account(connection);
-                                    
+
                                 } else {
                                     System.out.println("------------------------");
                                     System.out.println("Account does not exists");
