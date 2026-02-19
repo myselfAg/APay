@@ -950,24 +950,7 @@ public class App {
                             long enteredPass = sc.nextLong();
 
                             if (enteredPass == storedPass) {
-                                // String selectForDeleteTableQuery = "SELECT * FROM user WHERE account_number =
-                                // ?";
-                                // PreparedStatement selectForDeleteTablePreparedStatement =
-                                // connection.prepareStatement(selectForDeleteTableQuery);
-                                // selectForDeleteTablePreparedStatement.setLong(1, deleteAccountNumber);
-                                // ResultSet selectForDeleteTableResultSet =
-                                // selectForDeleteTablePreparedStatement.executeQuery();
-
-                                // String insertDeleteTableQuery = "INSERT INTO deleted_accounts
-                                // (account_number, name, last_balance) VALUES(?, ?, ?) account_number = ?";
-                                // PreparedStatement insertDeleteTablePreparedStatement =
-                                // connection.prepareStatement(insertDeleteTableQuery);
-                                // insertDeleteTablePreparedStatement.setLong(1, deleteAccountNumber);
-                                // insertDeleteTablePreparedStatement.setString(2,
-                                // selectForDeleteTableResultSet.getString("name"));
-                                // insertDeleteTablePreparedStatement.setLong(3,
-                                // selectForDeleteTableResultSet.getLong("amount"));
-                                // insertDeleteTablePreparedStatement.executeUpdate();
+                                
                                 int deleteRowsAffected = deletePreparedStatement.executeUpdate();
                                 if (deleteRowsAffected > 0) {
                                     System.out.println("-----------------------------");
@@ -1009,3 +992,23 @@ public class App {
 
     }
 }
+
+
+// String selectForDeleteTableQuery = "SELECT * FROM user WHERE account_number =
+                                // ?";
+                                // PreparedStatement selectForDeleteTablePreparedStatement =
+                                // connection.prepareStatement(selectForDeleteTableQuery);
+                                // selectForDeleteTablePreparedStatement.setLong(1, deleteAccountNumber);
+                                // ResultSet selectForDeleteTableResultSet =
+                                // selectForDeleteTablePreparedStatement.executeQuery();
+
+                                // String insertDeleteTableQuery = "INSERT INTO deleted_accounts
+                                // (account_number, name, last_balance) VALUES(?, ?, ?) account_number = ?";
+                                // PreparedStatement insertDeleteTablePreparedStatement =
+                                // connection.prepareStatement(insertDeleteTableQuery);
+                                // insertDeleteTablePreparedStatement.setLong(1, deleteAccountNumber);
+                                // insertDeleteTablePreparedStatement.setString(2,
+                                // selectForDeleteTableResultSet.getString("name"));
+                                // insertDeleteTablePreparedStatement.setLong(3,
+                                // selectForDeleteTableResultSet.getLong("amount"));
+                                // insertDeleteTablePreparedStatement.executeUpdate();
