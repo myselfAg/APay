@@ -320,6 +320,7 @@ public class App {
                                     System.out.println(e.getMessage());
                                 }
                                 break;
+
                             case 4:
                                 break;
 
@@ -745,15 +746,87 @@ public class App {
                         }
 
                         break;
-                    case 5: // sent money to another account
+
+                    case 5:
                         try {
+                            connection.setAutoCommit(false);
+                            String receiverDetail = "SELECT * FROM user WHERE account_number = ?";
+                            String debitQuery = "UPDATE user SET amount = amount - ? WHERE account_number = ?";
+                            String creditQuery = "UPDATE user SET amount = amount + ? WHERE account_number = ?";
 
-                        } catch (Exception e) {
+                            PreparedStatement checkDetailsPreparedStatement = connection
+                                    .prepareStatement(receiverDetail);
+                            PreparedStatement debitPreparedStatement = connection.prepareStatement(debitQuery);
+                            PreparedStatement creditPreparedStatement = connection.prepareStatement(creditQuery);
 
+                            checkDetailsPreparedStatement.setLong(1, accountNumber);
+                            ResultSet checkDetailsresultSet = checkDetailsPreparedStatement.executeQuery();
+
+                            System.out.println("---------------------");
+                            System.out.print("Enter account number: ");
+                            long receiverAccountNumber = sc.nextLong();
+
+                            System.out.print("Enter amount: ");
+                            long amount = sc.nextLong();
+
+                            if (checkDetailsresultSet.next()) {
+                                if (amount > 0) {
+                                    System.out.print("Enter PIN: ");
+                                    long enteredPin = sc.nextLong();
+                                    if (checkDetailsresultSet.getLong("pin") == enteredPin) {
+                                        if (checkDetailsresultSet.getLong("amount") >= amount) {
+
+                                            debitPreparedStatement.setLong(1, amount);
+                                            debitPreparedStatement.setLong(2, accountNumber);
+
+                                            creditPreparedStatement.setLong(1, amount);
+                                            creditPreparedStatement.setLong(2, receiverAccountNumber);
+
+                                            int debitRowsAffected = debitPreparedStatement.executeUpdate();
+                                            int creditRowsAffected = creditPreparedStatement.executeUpdate();
+
+                                            if (debitRowsAffected > 0 && creditRowsAffected > 0) {
+                                                System.out.println("------------------------------------");
+                                                System.out.println(amount + " rs sent Successfully");
+                                                System.out.println("------------------------------------");
+                                                connection.commit();
+                                            } else {
+                                                System.out.println("--------------------");
+                                                System.out.println("Amount is not sent");
+                                                System.out.println("--------------------");
+                                                connection.rollback();
+                                            }
+                                        } else {
+                                            System.out.println("------------------------");
+                                            System.out.println("Insufficient Balance");
+                                            System.out.println("------------------------");
+                                            connection.rollback();
+                                        }
+                                    } else {
+                                        System.out.println("------------");
+                                        System.out.println("Invalid PIN");
+                                        System.out.println("------------");
+                                        connection.rollback();
+                                    }
+
+                                } else {
+                                    System.out.println("------------------------");
+                                    System.out.println("Amount must be positive");
+                                    System.out.println("------------------------");
+                                    connection.rollback();
+                                }
+                            }
+
+                        } catch (SQLException e) {
+                            connection.rollback();
+                            System.out.println("---------------------------------------");
+                            System.out.println("Transaction Failed" + e.getMessage());
+                            System.out.println("---------------------------------------");
                         } finally {
-
+                            connection.setAutoCommit(true);
                         }
                         break;
+
                     case 6:
                         String transactionHistoryQuery = "SELECT * FROM user_transaction WHERE fromWhomAccNo = ? OR toWhomAccNo = ?";
                         PreparedStatement transactionHistoryPreparedStatement = connection
@@ -950,7 +1023,7 @@ public class App {
                             long enteredPass = sc.nextLong();
 
                             if (enteredPass == storedPass) {
-                                
+
                                 int deleteRowsAffected = deletePreparedStatement.executeUpdate();
                                 if (deleteRowsAffected > 0) {
                                     System.out.println("-----------------------------");
@@ -980,7 +1053,7 @@ public class App {
                         break;
 
                     default:
-                        
+
                         System.out.println("Invalid Choice");
 
                         break;
@@ -993,22 +1066,21 @@ public class App {
     }
 }
 
+// String selectForDeleteTableQuery = "SELECT * FROM user WHERE account_number =
+// ?";
+// PreparedStatement selectForDeleteTablePreparedStatement =
+// connection.prepareStatement(selectForDeleteTableQuery);
+// selectForDeleteTablePreparedStatement.setLong(1, deleteAccountNumber);
+// ResultSet selectForDeleteTableResultSet =
+// selectForDeleteTablePreparedStatement.executeQuery();
 
-                                // String selectForDeleteTableQuery = "SELECT * FROM user WHERE account_number =
-                                // ?";
-                                // PreparedStatement selectForDeleteTablePreparedStatement =
-                                // connection.prepareStatement(selectForDeleteTableQuery);
-                                // selectForDeleteTablePreparedStatement.setLong(1, deleteAccountNumber);
-                                // ResultSet selectForDeleteTableResultSet =
-                                // selectForDeleteTablePreparedStatement.executeQuery();
-
-                                // String insertDeleteTableQuery = "INSERT INTO deleted_accounts
-                                // (account_number, name, last_balance) VALUES(?, ?, ?) account_number = ?";
-                                // PreparedStatement insertDeleteTablePreparedStatement =
-                                // connection.prepareStatement(insertDeleteTableQuery);
-                                // insertDeleteTablePreparedStatement.setLong(1, deleteAccountNumber);
-                                // insertDeleteTablePreparedStatement.setString(2,
-                                // selectForDeleteTableResultSet.getString("name"));
-                                // insertDeleteTablePreparedStatement.setLong(3,
-                                // selectForDeleteTableResultSet.getLong("amount"));
-                                // insertDeleteTablePreparedStatement.executeUpdate();
+// String insertDeleteTableQuery = "INSERT INTO deleted_accounts
+// (account_number, name, last_balance) VALUES(?, ?, ?) account_number = ?";
+// PreparedStatement insertDeleteTablePreparedStatement =
+// connection.prepareStatement(insertDeleteTableQuery);
+// insertDeleteTablePreparedStatement.setLong(1, deleteAccountNumber);
+// insertDeleteTablePreparedStatement.setString(2,
+// selectForDeleteTableResultSet.getString("name"));
+// insertDeleteTablePreparedStatement.setLong(3,
+// selectForDeleteTableResultSet.getLong("amount"));
+// insertDeleteTablePreparedStatement.executeUpdate();
